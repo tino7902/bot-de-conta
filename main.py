@@ -8,10 +8,13 @@ from telegram.ext import (
     ContextTypes,
 )
 
-with open("token.txt", "r") as f:
-    token = f.readlines()
+def get_token():
+    with open("token.txt", "r") as f:
+        lineas = f.readlines()
+    token = lineas[0]
+    return token
 
-TOKEN = token[0]
+TOKEN = get_token()
 
 NUM1, OPERATION = range(2)
 
@@ -21,7 +24,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     return NUM1
 
 
-async def get_num2(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+async def get_num(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     try:
         context.user_data["num1"] = int(update.message.text)
     except:
@@ -38,16 +41,16 @@ async def get_num2(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
 async def get_operation(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     num1 = context.user_data["num1"]
     operation = update.message.text.strip()
-
-    if operation == "1":
-        gravado = round(num1 / 1.1)
-        iva = round(num1 / 11)
-    elif operation == "2":
-        gravado = round(num1 / 1.05)
-        iva = round(num1 / 21)
-    else:
-        await update.message.reply_text("Operación no válida. Usa 1 o 2")
-        return OPERATION
+    match operation:
+        case "1":
+            gravado = round(num1 / 1.1)
+            iva = round(num1 / 11)
+        case "2":
+            gravado = round(num1 / 1.05)
+            iva = round(num1 / 21)
+        case _:
+            await update.message.reply_text("Operación no válida. Usa 1 o 2")
+            return OPERATION
 
     await update.message.reply_text(f"El precio gravado es: {gravado}\nEl IVA es {iva}")
     return ConversationHandler.END
@@ -64,7 +67,7 @@ def main():
     conv_handler = ConversationHandler(
         entry_points=[CommandHandler("start", start)],
         states={
-            NUM1: [MessageHandler(filters.TEXT & ~filters.COMMAND, get_num2)],
+            NUM1: [MessageHandler(filters.TEXT & ~filters.COMMAND, get_num)],
             OPERATION: [MessageHandler(filters.TEXT & ~filters.COMMAND, get_operation)],
         },
         fallbacks=[CommandHandler("cancel", cancel)],
