@@ -109,10 +109,9 @@ async def next_account(update: Update, context: ContextTypes.DEFAULT_TYPE) -> in
         difference = iva_cf - iva_df
 
         if difference < 0:
-            response = f"Total IVA CF: {iva_cf}\nTotal IVA DF: {iva_df}\nDiferencia IVA CF - IVA DF: {difference}\n\nDebes {difference*-1} guaraníes en impuestos"
+            response = f"Total IVA CF: {iva_cf}\nTotal IVA DF: {iva_df}\nDiferencia IVA CF - IVA DF: {difference}\n\nDebes {difference * -1} guaraníes en impuestos"
         else:
             response = f"Total IVA CF: {iva_cf}\nTotal IVA DF: {iva_df}\nDiferencia IVA CF - IVA DF: {difference}\n\nTenes {difference} guaraníes a favor"
-
 
         await update.message.reply_text(response)
         return ConversationHandler.END  # Fin de la conversación
@@ -135,7 +134,9 @@ def main():
             NUM1: [MessageHandler(filters.TEXT & ~filters.COMMAND, get_num)],
             IVA_TYPE: [MessageHandler(filters.TEXT & ~filters.COMMAND, get_iva_type)],
             OPERATION: [MessageHandler(filters.TEXT & ~filters.COMMAND, get_operation)],
-            NEXT_ACCOUNT: [MessageHandler(filters.TEXT & ~filters.COMMAND, next_account)],
+            NEXT_ACCOUNT: [
+                MessageHandler(filters.TEXT & ~filters.COMMAND, next_account)
+            ],
         },
         fallbacks=[CommandHandler("cancel", cancel)],
     )
