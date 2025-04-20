@@ -10,8 +10,7 @@ from telegram.ext import (
 
 def get_token():
     with open("token.txt", "r") as f:
-        lineas = f.readlines()
-    token = lineas[0]
+        token = f.readline()
     return token
 
 TOKEN = get_token()
@@ -24,10 +23,10 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     return NUM1
 
 
-async def get_num(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+async def get_num2(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     try:
         context.user_data["num1"] = int(update.message.text)
-    except:
+    except ValueError:
         await update.message.reply_text(
             "No te entendí. Por favor asegurate el que el numero que me mandaste no tenga otras letras o puntos"
         )
@@ -41,6 +40,7 @@ async def get_num(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
 async def get_operation(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     num1 = context.user_data["num1"]
     operation = update.message.text.strip()
+
     match operation:
         case "1":
             gravado = round(num1 / 1.1)
@@ -67,7 +67,7 @@ def main():
     conv_handler = ConversationHandler(
         entry_points=[CommandHandler("start", start)],
         states={
-            NUM1: [MessageHandler(filters.TEXT & ~filters.COMMAND, get_num)],
+            NUM1: [MessageHandler(filters.TEXT & ~filters.COMMAND, get_num2)],
             OPERATION: [MessageHandler(filters.TEXT & ~filters.COMMAND, get_operation)],
         },
         fallbacks=[CommandHandler("cancel", cancel)],
