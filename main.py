@@ -8,10 +8,9 @@ from telegram.ext import (
     ContextTypes,
 )
 
-print("hola !")
 def get_token():
-    with open("token.txt", "r") as f:
-        token = f.readline()
+    with open(".env", "r") as f:
+        token = f.readline().strip("\n ")
     return token
 
 
